@@ -1,0 +1,60 @@
+openapi: 3.0.1
+info:
+  title: InnoID
+  description: 'InnoID is unified authorization system for Innopolis University students and employees.<br>It can be used by third-party apps (bots) to identify you are a student.<br><br>This is InnoID API documentation. Here you can learn how to use API and try it.<br><br>**Before using API**, you should register application in [Telegram bot (@InnoIDBot)](https://t.me/InnoIDBot) with the command `/newapp` or `/myapps` to get authorization token.<br><br>All requests should be sent to `https://api.innoid.ru/v1` with header `Authorization: Bearer {app_token}`'
+  version: 1.0.0
+servers:
+- url: https://api.innoid.ru/v1
+tags:
+- name: Users
+  description: Operations about users
+paths:
+  /users/{telegram_id}:
+    get:
+      tags:
+      - Users
+      summary: Get user by Telegram id
+      operationId: getUserByTgId
+      parameters:
+      - name: telegram_id
+        in: path
+        description: 'User ID in Telegram'
+        required: true
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        401:
+          description: Not authorized (the application token is invalid or missing)
+          content: {}
+        404:
+          description: User not found
+          content: {}
+      security:
+        - Authorization: []
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        is_authorized:
+          type: boolean
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: integer
+        message:
+          type: string
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
